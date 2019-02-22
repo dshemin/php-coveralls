@@ -113,6 +113,7 @@ class Configurator
         }
 
         return $configuration
+            ->setEntrypoint($options['entrypoint'])
             ->setRepoToken($repoToken !== null ? $repoToken : $repoSecretToken)
             ->setServiceName($options['service_name'])
             ->setRootDir($rootDir)
