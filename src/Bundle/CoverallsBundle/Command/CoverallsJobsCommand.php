@@ -107,6 +107,12 @@ class CoverallsJobsCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Root directory of the project.',
                 '.'
+            )
+            ->addOption(
+                'insecure',
+                '-k',
+                InputOption::VALUE_NONE,
+                'Skip SSL certificate check.'
             );
     }
 
@@ -130,7 +136,7 @@ class CoverallsJobsCommand extends Command
         $config = $this->loadConfiguration($input, $this->rootDir);
         $this->logger = $config->isVerbose() && !$config->isTestEnv() ? new ConsoleLogger($output) : new NullLogger();
 
-        $executionStatus = $this->executeApi($config);
+        $executionStatus = $this->executeApi($input, $config);
 
         $event = $stopwatch->stop(__CLASS__);
         $time = number_format($event->getDuration() / 1000, 3);        // sec
@@ -168,13 +174,19 @@ class CoverallsJobsCommand extends Command
     /**
      * Execute Jobs API.
      *
-     * @param Configuration $config configuration
+     * @param InputInterface $input  input arguments
+     * @param Configuration  $config configuration
      *
      * @return bool
      */
-    protected function executeApi(Configuration $config)
+    protected function executeApi(InputInterface $input, Configuration $config)
     {
-        $client = new Client();
+        $params = [];
+        if ($input->getOption('insecure')) {
+            $params['verify'] = false;
+        }
+
+        $client = new Client($params);
         $api = new Jobs($config, $client);
         $repository = new JobsRepository($api, $config);
 
