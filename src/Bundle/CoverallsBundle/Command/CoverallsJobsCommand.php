@@ -103,7 +103,7 @@ class CoverallsJobsCommand extends Command
             )
             ->addOption(
                 'entry_point',
-                '-o',
+                null,
                 InputOption::VALUE_REQUIRED,
                 'Coveralls entrypoint',
                 'https://coveralls.io'
